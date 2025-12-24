@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Генератор Презентаций</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .info-banner {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #155724;
+            font-size: 0.9em;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .label-icon {
+            margin-right: 6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .row.full {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+            display: block;
+        }
+
+        .status.loading {
+            background: #cfe2ff;
+            color: #084298;
+            border-left: 4px solid #0d6efd;
+            display: block;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .template-preview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .template-option {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .template-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .template-option input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .template-option.selected {
+            border-color: #667eea;
+            background: #e7f3ff;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 Генератор Презентаций</h1>
+            <p>Создавайте красивые презентации за секунды</p>
+        </header>
+
+        <div class="info-banner">
+            ✅ <strong>Версия БЕЗ LLM:</strong> Работает без интернета! Используются красивые шаблоны и картинки.
+        </div>
+
+        <div class="card">
+            <form id="presentationForm">
+                <div class="form-group row full">
+                    <label>
+                        <span class="label-icon">📝</span>
+                        Тема презентации <span style="color: red;">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="topic" 
+                        placeholder="Например: Искусственный интеллект, Веб-разработка"
+                        required
+                    >
+                </div>
+
+                <div class="form-group row">
+                    <div>
+                        <label>
+                            <span class="label-icon">📊</span>
+                            Количество слайдов <span style="color: red;">*</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="slides" 
+                            min="2" 
+                            max="15" 
+                            value="5"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label>
+                            <span class="label-icon">📁</span>
+                            Категория контента <span style="color: red;">*</span>
+                        </label>
+                        <select id="category" required>
+                            <option value="tech">💻 Технология</option>
+                            <option value="business">📈 Бизнес</option>
+                            <option value="science">🔬 Наука</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row full">
+                    <label>
+                        <span class="label-icon">🎨</span>
+                        Дизайн шаблона <span style="color: red;">*</span>
+                    </label>
+                    <div class="template-preview" id="templateOptions">
+                        <!-- Опции шаблонов будут добавлены JavaScript -->
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div>
+                        <label>
+                            <span class="label-icon">🌐</span>
+                            Язык <span style="color: red;">*</span>
+                        </label>
+                        <select id="language" required>
+                            <option value="russian">🇷🇺 Русский</option>
+                            <option value="english">🇬🇧 English</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>
+                            <span class="label-icon">📁</span>
+                            Папка сохранения
+                        </label>
+                        <input 
+                            type="text" 
+                            id="outputPath" 
+                            placeholder="./presentations"
+                            value="./presentations"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    <span class="label-icon">✨</span>
+                    Создать презентацию
+                </button>
+            </form>
+
+            <div class="status" id="status"></div>
+
+            <div class="info-box">
+                💡 <strong>Совет:</strong> Выберите категорию, которая лучше всего соответствует вашей теме, 
+                чтобы получить более релевантный контент.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api/generate';
+        const TEMPLATES = {
+            'modern': '💙 Современный',
+            'professional': '🤝 Профессиональный',
+            'vibrant': '💜 Яркий',
+            'ocean': '🌊 Океан',
+            'sunset': '🌅 Закат'
+        };
+
+        // Инициализация шаблонов
+        function initTemplates() {
+            const container = document.getElementById('templateOptions');
+            Object.entries(TEMPLATES).forEach(([key, label]) => {
+                const div = document.createElement('div');
+                div.className = 'template-option';
+                if (key === 'modern') div.classList.add('selected');
+
+                div.innerHTML = `
+                    <input type="radio" name="template" value="${key}" ${key === 'modern' ? 'checked' : ''} id="template_${key}">
+                    <label for="template_${key}" style="cursor: pointer; margin: 0;">${label}</label>
+                `;
+
+                div.addEventListener('click', () => {
+                    document.querySelectorAll('.template-option').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    document.getElementById(`template_${key}`).checked = true;
+                });
+
+                container.appendChild(div);
+            });
+        }
+
+        initTemplates();
+
+        document.getElementById('presentationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const statusDiv = document.getElementById('status');
+            const submitBtn = document.getElementById('submitBtn');
+
+            const formData = {
+                topic: document.getElementById('topic').value.trim(),
+                slides: parseInt(document.getElementById('slides').value),
+                template: document.querySelector('input[name="template"]:checked').value,
+                language: document.getElementById('language').value,
+                category: document.getElementById('category').value,
+                outputPath: document.getElementById('outputPath').value.trim() || './presentations'
+            };
+
+            if (!formData.topic) {
+                statusDiv.textContent = '❌ Пожалуйста, укажите тему';
+                statusDiv.className = 'status error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+
+            statusDiv.innerHTML = '<span class="loader"></span>Создаю презентацию...';
+            statusDiv.className = 'status loading';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    statusDiv.innerHTML = `✅ ${data.message}<br><small>📁 ${data.filepath}</small>`;
+                    statusDiv.className = 'status success';
+                    document.getElementById('presentationForm').reset();
+                    initTemplates();
+                } else {
+                    statusDiv.textContent = `❌ Ошибка: ${data.error || 'Неизвестная ошибка'}`;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `❌ <strong>Ошибка подключения!</strong><br>
+                    Убедитесь, что бэкенд запущен: <code>python app.py</code><br>
+                    <small>${error.message}</small>`;
+                statusDiv.className = 'status error';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
